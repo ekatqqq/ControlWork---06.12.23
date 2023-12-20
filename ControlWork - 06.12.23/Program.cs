@@ -1,86 +1,65 @@
 ﻿//2 вариант
 
-namespace controlworkmatrix
+using System;
+using System.IO;
+
+class Matrix
 {
-    class Matrix
+    static void Main()
     {
-        static void Main(string[] args)
+        string filePath = "C:/Users/user/source/repos/ControlWork - 06.12.23/ControlWork - 06.12.23/File.txt";
+        int height;
+        int width;
+        int[,] matrix;
+
+        using (StreamReader sr = new StreamReader(filePath))
         {
-            Shift matrixShift = new Shift();
-            string file = "File.txt";
+            string[] dimensions = sr.ReadLine().Split();
+            height = int.Parse(dimensions[0]);
+            width = int.Parse(dimensions[1]);
 
-            matrixShift.ReadMatrix(file);
-            Console.WriteLine("Исходная матрица:");
-            matrixShift.PrintMatrix();
-
-            matrixShift.ShiftRows();
-            Console.WriteLine("Матрица после сдвига:");
-            matrixShift.PrintMatrix();
-
-            Console.ReadLine();
-        }
-    }
-    class ReadMatrixFromFile
-    {
-        private int height;
-        private int width;
-        private int[,] matrix;
-
-        public void ReadMatrix(string file)
-        {
-            string[] lines = File.ReadAllLines(file);
-
-            string[] size = lines[0].Split(' ');
-            height = int.Parse(size[0]);
-            width = int.Parse(size[1]);
             matrix = new int[height, width];
 
             for (int i = 0; i < height; i++)
             {
-                string[] row = lines[i + 1].Split(' ');
+                string[] row = sr.ReadLine().Split();
                 for (int j = 0; j < width; j++)
                 {
                     matrix[i, j] = int.Parse(row[j]);
                 }
             }
         }
+
+        ShiftMatrix(matrix);
+
+        Console.WriteLine("матрица после сдвига: ");
+        for (int i = 0; i < height; i++)
+        {
+            for (int j = 0; j < width; j++)
+            {
+                Console.Write(matrix[i, j] + " ");
+            }
+            Console.WriteLine();
+        }
     }
-    class Shift
+
+    static void ShiftMatrix(int[,] matrix)
     {
-        private int height;
-        private int width;
-        private int[,] matrix;
-        public void ShiftRows()
-        {
-            for (int i = 0; i < height; i++)
-            {
-                int[] shiftedRow = new int[width];
-                for (int j = 0; j < width; j++)
-                {
-                    shiftedRow[(j + i + 1) % width] = matrix[i, j];
-                }
+        int height = matrix.GetLength(0);
+        int width = matrix.GetLength(1);
 
-                for (int j = 0; j < width; j++)
-                {
-                    matrix[i, j] = shiftedRow[j];
-                }
-            }
-        }
-        public void PrintMatrix()
+        for (int i = 0; i < height; i++)
         {
-            for (int i = 0; i < height; i++)
+            int[] rowNew = new int[width];
+            for (int j = 0; j < width; j++)
             {
-                for (int j = 0; j < width; j++)
-                {
-                    Console.Write(matrix[i, j] + " ");
-                }
-                Console.WriteLine();
+                rowNew[j] = matrix[i, j];
             }
-        }
 
-        internal void ReadMatrix(string file)
-        {
-            throw new NotImplementedException();
+            for (int j = 0; j < width; j++)
+            {
+                matrix[i, (j + (i + 2)) % width] = rowNew[j];
+            }
         }
     }
 }
